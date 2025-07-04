@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
-import { Text } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "expo-router";
+import { useEffect, useLayoutEffect, useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import fetchAndStorePokemon from "../../storage/fetch";
 import AppStorage from "../../storage/storage";
 import { Pokemon } from "../../storage/types";
@@ -11,6 +13,7 @@ import PokeCard from "../components/PokeCard";
 
 export default function Favorite() {
     // Component state
+    const navigation = useNavigation();
     const [hasFavorite, setHasFavorite] = useState<boolean>(true);
     const [pokemon, setPokemon] = useState<Pokemon | null>(null);
 
@@ -37,15 +40,39 @@ export default function Favorite() {
         loadPokemon();
     }, []);
 
-    // Step 2 - render poke card
-    if (hasFavorite && pokemon) {
-        return (
-            <PokeCard pokemon={pokemon}/>
-        );
-    }
-    else {
-        return (
-            <Text>No i ni ma pokemona :(</Text>
-        );
-    }
+    // Step 2 - handle unmarking the pokemon
+    // - Includes rendering a header button and handling the button clicked event
+    const handleUnliked = () => { setHasFavorite(!hasFavorite); }
+
+    useLayoutEffect(() => {
+        const iconName = hasFavorite ? "heart-dislike-outline" : "heart-outline";
+
+        navigation.setOptions({
+            headerRight: () => (
+            <TouchableOpacity onPress={handleUnliked} style={{ marginRight: 10 }}>
+                <Ionicons name={iconName} size={36} color="red" />
+            </TouchableOpacity>
+            ),
+        });
+    }, [navigation, hasFavorite]);
+
+    // Step 3 - render poke card
+    return (
+        <View style={styles.mainView}>
+            {hasFavorite && pokemon ? <PokeCard pokemon={pokemon}/> : <Text>No i nie ma pokemona :(</Text>}
+        </View>
+    );
 }
+
+
+// ------------------------------
+// Favorite pokemon view - styles
+// ------------------------------
+
+const styles = StyleSheet.create({
+    mainView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+});

@@ -9,7 +9,7 @@ import { Pokemon } from "../../storage/types";
 export default function PokeCard({pokemon}: {pokemon: Pokemon}) {
     useEffect(() => {
         console.log(pokemon.sprites.front_default);
-    }, [])
+    }, []);
 
     return (
         <View style={styles.card}>
@@ -17,7 +17,7 @@ export default function PokeCard({pokemon}: {pokemon: Pokemon}) {
                 style={styles.sprite}
                 source={{uri: pokemon.sprites.front_default}}
             />
-            <Text style={styles.title}> {pokemon.name} </Text>
+            <Text style={styles.title}> {pokemon.name.toUpperCase()} </Text>
             <Text style={styles.info}> Base experience: {pokemon.base_experience} </Text>
             <Text style={styles.info}> Height: {pokemon.height} </Text>
             <Text style={styles.info}> Weight: {pokemon.weight} </Text>
@@ -33,20 +33,33 @@ export default function PokeCard({pokemon}: {pokemon: Pokemon}) {
 
 const styles = StyleSheet.create({
     card: {
-        width: 200,
+        width: 250,
+        backgroundColor: '#fff',
+        borderRadius: 16,
+        padding: 16,
+        marginVertical: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 4,
     },
     sprite: {
         alignSelf: 'center',
-        width: 200,
-        height: 200
+        width: 120,
+        height: 120,
+        marginBottom: 12,
     },
     title: {
         alignSelf: 'center',
-        marginBottom: 20,
-        fontSize: 24,
-        fontWeight: 'bold'
+        fontSize: 22,
+        fontWeight: '600',
+        marginBottom: 12,
+        color: '#333',
     },
     info: {
-        fontSize: 16
-    }
+        fontSize: 16,
+        color: '#555',
+        marginBottom: 4,
+    },
 });
