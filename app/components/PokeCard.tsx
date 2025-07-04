@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { Pokemon } from "../../storage/types";
 
@@ -6,13 +5,11 @@ import { Pokemon } from "../../storage/types";
 // Pokemon card component
 // ----------------------
 
-export default function PokeCard({pokemon}: {pokemon: Pokemon}) {
-    useEffect(() => {
-        console.log(pokemon.sprites.front_default);
-    }, []);
+export default function PokeCard({pokemon, active}: {pokemon: Pokemon, active: boolean}) {
+    const cardStyles = active ? [styles.card] : [styles.card, styles.disabled];
 
     return (
-        <View style={styles.card}>
+        <View style={cardStyles}>
             <Image 
                 style={styles.sprite}
                 source={{uri: pokemon.sprites.front_default}}
@@ -43,6 +40,9 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 6,
         elevation: 4,
+    },
+    disabled: {
+        opacity: 0.3
     },
     sprite: {
         alignSelf: 'center',

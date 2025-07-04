@@ -2,11 +2,16 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 
+
+// -----------
+// Tabs layout
+// -----------
+
 export default function TabsLayout() {
   return (
     <Tabs screenOptions={{ headerShown: true }}>
       <Tabs.Screen
-        name="favorites"
+        name="favorite"
         options={{
           title: "Favorite",
           tabBarIcon: ({ color, size }) => (

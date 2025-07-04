@@ -57,9 +57,11 @@ export default function Favorite() {
     }, [navigation, hasFavorite]);
 
     // Step 3 - render poke card
+    // - If an error occured during fetching the data, display some dumb error text instead
     return (
         <View style={styles.mainView}>
-            {hasFavorite && pokemon ? <PokeCard pokemon={pokemon}/> : <Text>No i nie ma pokemona :(</Text>}
+            {pokemon ? <PokeCard pokemon={pokemon} active={hasFavorite}/> :
+                       <Text>Error loading pokemon</Text>}
         </View>
     );
 }
