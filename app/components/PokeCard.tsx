@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { Pokemon } from "../../storage/types";
 
@@ -6,24 +5,38 @@ import { Pokemon } from "../../storage/types";
 // Pokemon card component
 // ----------------------
 
-export default function PokeCard({pokemon}: {pokemon: Pokemon}) {
-    useEffect(() => {
-        console.log(pokemon.sprites.front_default);
-    }, []);
+// Main component
+export default function PokeCard({pokemon, active}: {pokemon: Pokemon, active: boolean}) {
+    const cardStyles = active ? [styles.card] : [styles.card, styles.disabled];
 
     return (
-        <View style={styles.card}>
+        <View style={cardStyles}>
             <Image 
                 style={styles.sprite}
                 source={{uri: pokemon.sprites.front_default}}
             />
             <Text style={styles.title}> {pokemon.name.toUpperCase()} </Text>
+            <PokeCardDescription pokemon={pokemon} />
+        </View>
+    );
+}
+
+
+// ------------------------------------
+// Helper components - card description
+// ------------------------------------
+
+// A separate component to display detailed pokemon information and statistics
+// - Can be easily disabled to reduce the size of a PokeCard
+function PokeCardDescription({pokemon}: {pokemon: Pokemon}) {
+    return (
+        <>
             <Text style={styles.info}> Base experience: {pokemon.base_experience} </Text>
             <Text style={styles.info}> Height: {pokemon.height} </Text>
             <Text style={styles.info}> Weight: {pokemon.weight} </Text>
             <Text style={styles.info}> Order: {pokemon.order} </Text>
-        </View>
-    );
+        </>
+    )
 }
 
 
@@ -43,6 +56,10 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 6,
         elevation: 4,
+    },
+    disabled: {
+        opacity: 0.3,
+        elevation: 0
     },
     sprite: {
         alignSelf: 'center',
