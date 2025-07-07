@@ -2,9 +2,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Pokemon } from "../../constants/types";
 import fetchAndStorePokemon from "../../storage/fetch";
 import AppStorage from "../../storage/storage";
-import { Pokemon } from "../../storage/types";
 import PokeCard from "../components/PokeCard";
 
 // ---------------------

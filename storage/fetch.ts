@@ -1,5 +1,5 @@
+import { Pokemon } from "../constants/types";
 import AppStorage from "./storage";
-import { Pokemon } from "./types";
 
 // --------------------------------
 // Helper functions - fetching data

@@ -6,6 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // A wrapper class for built-in AsyncStorage
 // - Allows to store fetched data in one place and group it using custom keys
+// - Saves data strictly in JSON format
 export default class AppStorage {
     // Add data to storage (bindided with a key)
     static async set<T>(key: string, value: T): Promise<void> {

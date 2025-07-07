@@ -3,7 +3,7 @@
 // ----------------------
 
 // Universal data type - resource info
-export type Resource = {
+export interface Resource {
     name: string;
     url: string;
 };
@@ -13,7 +13,7 @@ export type Resource = {
 // --------------------
 
 // Data type - main pokemon type
-export type Pokemon = {
+export interface Pokemon {
     id: number;
     name: string;
     base_experience: number;
@@ -32,24 +32,24 @@ export type Pokemon = {
     }>;
     species: Resource;
     sprites: SpriteInfo;
-    stats: any[];
+    stats: any[];   // TODO: Replace any with real type
     types: any[];
     past_types: any[];
     past_abilities: any[];
 };
 
-type AbilityInfo = {
+interface AbilityInfo {
     is_hidden: boolean;
     slot: number;
     ability: Resource;
 };
 
-type GameInfo = {
+interface GameInfo {
     game_index: number;
     version: Resource;
 };
 
-type ItemInfo = {
+interface ItemInfo {
     item: Resource;
     version_details: Array<{
         rarity: number;
@@ -57,14 +57,14 @@ type ItemInfo = {
     }>;
 };
 
-type VersionGroupInfo = {
+interface VersionGroupInfo {
     level_learned_at: number;
     version_group: Resource;
     move_learn_method: Resource;
     order: number;
 };
 
-type SpriteInfo = {
+interface SpriteInfo {
     back_default: string;
     back_female: string | null;
     back_shiny: string;
