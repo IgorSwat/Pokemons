@@ -34,7 +34,7 @@ export default function Favorite() {
     return (
         <View style={styles.mainView}>
             {pokemon ? <PokeCard pokemon={pokemon} favorite={pokemon != null}/> :
-                       <Text>No favorite pokemon selected</Text>}
+                       <Text style={{fontSize: 18}}>No favorite pokemon selected</Text>}
         </View>
     );
 }
