@@ -1,8 +1,10 @@
 import { Pokemon, Resource } from "@/constants/types";
+import PokeEntry from "../components/PokeEntry";
 
+import AppStorage from "@/storage/storage";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { FlatList, SafeAreaView, StyleSheet } from "react-native";
-import PokeEntry from "../components/PokeEntry";
 
 // -----------------
 // Pokemon list view
@@ -13,6 +15,9 @@ const POKEMON_LIST_MAX_SIZE = 16;
 
 // Pokemon list main component
 export default function Pokemons() {
+    // Navigation state
+    const router = useRouter();
+
     // Component state
     const [pokemons, setPokemons] = useState<Pokemon[]>([]);
 
@@ -32,12 +37,23 @@ export default function Pokemons() {
         loadData();
     }, []);
 
-    // Step 2 - render pokemon data with FlatList
+    // Step 2 - navigation between views
+    // - We want to navigate to the pokemon view after clicking one of the list entries
+    // - Save selected pokemon in async storage to render details tab easier
+    const handleItemClick = async (item: Pokemon) => { 
+        // Save pokemon to async storage
+        AppStorage.set("selected", item);
+
+        // Route to the details tab
+        router.push("/details");
+    };
+
+    // Step 3 - render pokemon data with FlatList
     return (
         <SafeAreaView style={styles.container}>
             <FlatList
                 data={pokemons}
-                renderItem={({item}) => <PokeEntry pokemon={item} />}
+                renderItem={({item}) => <PokeEntry pokemon={item} handleClick={() => handleItemClick(item)}/>}
                 keyExtractor={(item) => item.id.toString()}
             />
         </SafeAreaView>

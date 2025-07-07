@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, View } from "react-native";
-import { Pokemon } from "../../constants/types";
+import { AbilityInfo, Pokemon } from "../../constants/types";
 
 // ----------------------
 // Pokemon card component
@@ -15,11 +15,22 @@ export default function PokeCard({pokemon, active}: {pokemon: Pokemon, active: b
                 style={styles.sprite}
                 source={{uri: pokemon.sprites.front_default}}
             />
-            <Text style={styles.title}> {pokemon.name.toUpperCase()} </Text>
-            <Text style={styles.info}> Base experience: {pokemon.base_experience} </Text>
-            <Text style={styles.info}> Height: {pokemon.height} </Text>
-            <Text style={styles.info}> Weight: {pokemon.weight} </Text>
-            <Text style={styles.info}> Order: {pokemon.order} </Text>
+            <Text style={styles.title}>
+                {pokemon.name.toUpperCase()}
+            </Text>
+            <Text style={styles.info}>
+                <Text style={{fontWeight: '600'}}>Base experience:</Text> {pokemon.base_experience} </Text>
+            <Text style={styles.info}>
+                <Text style={{fontWeight: '600'}}>Height:</Text> {pokemon.height} </Text>
+            <Text style={styles.info}>
+                <Text style={{fontWeight: '600'}}>Weight:</Text> {pokemon.weight} </Text>
+            <Text style={styles.info}>
+                <Text style={{fontWeight: '600'}}>Order:</Text> {pokemon.order} </Text>
+            <Text style={styles.info}>
+                <Text style={{fontWeight: '600'}}>Abilities:</Text> {
+                    pokemon.abilities.map((ability: AbilityInfo) => ability.ability.name + " ")
+                }
+            </Text>
         </View>
     );
 }
@@ -31,7 +42,9 @@ export default function PokeCard({pokemon, active}: {pokemon: Pokemon, active: b
 
 const styles = StyleSheet.create({
     card: {
-        width: 250,
+        width: "80%",
+        height: "auto",
+        minHeight: "33%",
         backgroundColor: '#fff',
         borderRadius: 16,
         padding: 16,
@@ -48,8 +61,8 @@ const styles = StyleSheet.create({
     },
     sprite: {
         alignSelf: 'center',
-        width: 120,
-        height: 120,
+        width: "50%",
+        height: 100,
         marginBottom: 12,
     },
     title: {
@@ -63,5 +76,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#555',
         marginBottom: 4,
+        flexWrap: "wrap"
     },
 });

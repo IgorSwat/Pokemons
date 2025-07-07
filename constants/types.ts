@@ -38,18 +38,18 @@ export interface Pokemon {
     past_abilities: any[];
 };
 
-interface AbilityInfo {
+export interface AbilityInfo {
     is_hidden: boolean;
     slot: number;
     ability: Resource;
 };
 
-interface GameInfo {
+export interface GameInfo {
     game_index: number;
     version: Resource;
 };
 
-interface ItemInfo {
+export interface ItemInfo {
     item: Resource;
     version_details: Array<{
         rarity: number;
@@ -57,14 +57,14 @@ interface ItemInfo {
     }>;
 };
 
-interface VersionGroupInfo {
+export interface VersionGroupInfo {
     level_learned_at: number;
     version_group: Resource;
     move_learn_method: Resource;
     order: number;
 };
 
-interface SpriteInfo {
+export interface SpriteInfo {
     back_default: string;
     back_female: string | null;
     back_shiny: string;

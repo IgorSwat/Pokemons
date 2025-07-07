@@ -11,20 +11,20 @@ export default function TabsLayout() {
   return (
     <Tabs screenOptions={{ headerShown: true }}>
       <Tabs.Screen
-        name="favorite"
-        options={{
-          title: "Favorite",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="heart-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="pokemons"
         options={{
           title: "Pokemons",
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="catching-pokemon" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="favorite"
+        options={{
+          title: "Favorite",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="heart-outline" size={size} color={color} />
           ),
         }}
       />
