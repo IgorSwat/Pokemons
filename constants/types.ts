@@ -26,10 +26,7 @@ export interface Pokemon {
     game_indices: GameInfo[];
     held_items: ItemInfo[];
     location_area_encounters: string;
-    moves: Array<{
-        move: Resource[]; 
-        version_group_details: VersionGroupInfo[];
-    }>;
+    moves: MoveInfo[];
     species: Resource;
     sprites: SpriteInfo;
     stats: any[];   // TODO: Replace any with real type
@@ -56,6 +53,11 @@ export interface ItemInfo {
         version: Resource;
     }>;
 };
+
+export interface MoveInfo {
+    move: Resource,
+    version_group_details: VersionGroupInfo[];
+}
 
 export interface VersionGroupInfo {
     level_learned_at: number;

@@ -6,8 +6,8 @@ import { AbilityInfo, Pokemon } from "../../constants/types";
 // ----------------------
 
 // Main component
-export default function PokeCard({pokemon, active}: {pokemon: Pokemon, active: boolean}) {
-    const cardStyles = active ? [styles.card] : [styles.card, styles.disabled];
+export default function PokeCard({pokemon, favorite}: {pokemon: Pokemon, favorite: boolean}) {
+    const cardStyles = favorite ? [styles.card, styles.favorite] : [styles.card];
 
     return (
         <View style={cardStyles}>
@@ -55,9 +55,16 @@ const styles = StyleSheet.create({
         shadowRadius: 6,
         elevation: 4,
     },
-    disabled: {
-        opacity: 0.3,
-        elevation: 0
+    favorite: {
+        borderWidth: 2,
+        borderColor: '#e91e63',
+        backgroundColor: '#fff0f5',
+        shadowColor: '#e91e63',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.3,
+        shadowRadius: 12,
+        elevation: 10,
+        transform: [{ scale: 1.05 }],
     },
     sprite: {
         alignSelf: 'center',

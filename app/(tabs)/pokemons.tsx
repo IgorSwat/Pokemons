@@ -24,7 +24,7 @@ export default function Pokemons() {
     // Step 1 - load pokemon data from Poke API
     // - TODO: remove list size limitations
     useEffect(() => {
-        // Helper function - an async wrapper
+        // Helper function - an async wrapper for loading data from Poke API
         const loadData = async () => {
             const names = await fetchPokemonNames(0, POKEMON_LIST_MAX_SIZE);
             const data = await fetchPokemons(names);
@@ -53,7 +53,7 @@ export default function Pokemons() {
         <SafeAreaView style={styles.container}>
             <FlatList
                 data={pokemons}
-                renderItem={({item}) => <PokeEntry pokemon={item} handleClick={() => handleItemClick(item)}/>}
+                renderItem={({item}) => <PokeEntry pokemon={item} handleClick={() => handleItemClick(item)} />}
                 keyExtractor={(item) => item.id.toString()}
             />
         </SafeAreaView>
@@ -111,5 +111,4 @@ const styles = StyleSheet.create({
     container: {
         flex: 1.
     },
-
 });

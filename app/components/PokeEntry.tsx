@@ -1,4 +1,4 @@
-import { Colors } from "@/constants/colors";
+import { Colors } from "@/constants/Colors";
 import { Pokemon } from "@/constants/types";
 
 import { Image, Pressable, StyleSheet, Text } from "react-native";
