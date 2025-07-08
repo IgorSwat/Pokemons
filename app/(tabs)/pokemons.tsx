@@ -2,6 +2,7 @@ import { fetchPokemonNames, fetchPokemons } from "@/api/requests";
 import { Pokemon } from "@/constants/types";
 import PokeEntry from "../../components/PokeEntry";
 
+import useFavorite from "@/hooks/useFavorite";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, SafeAreaView, StyleSheet } from "react-native";
@@ -22,6 +23,7 @@ export default function Pokemons() {
     // Component state
     const [pokemons, setPokemons] = useState<Pokemon[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const favorite = useFavorite();
 
     // Step 1 - loading pokemon data from Poke API
     const loadMorePokemons = async () => {
@@ -63,7 +65,7 @@ export default function Pokemons() {
         <SafeAreaView style={styles.container}>
             <FlatList
                 data={pokemons}
-                renderItem={({item}) => <PokeEntry pokemon={item} handleClick={() => handleItemClick(item)} />}
+                renderItem={({item}) => <PokeEntry pokemon={item} favorite={item.name === favorite?.name} handleClick={() => handleItemClick(item)} />}
                 keyExtractor={(item) => item.id.toString()}
                 onEndReached={loadMorePokemons}
                 onEndReachedThreshold={0.3}

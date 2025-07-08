@@ -9,14 +9,16 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 // A component for displaying pokemon entry in main pokemons list view
 // - The whole component works as a big button that navigates to given pokemon's view page
-export default function PokeEntry({pokemon, handleClick}: {pokemon: Pokemon, handleClick: (e: any) => void}) {
+export default function PokeEntry({pokemon, favorite, handleClick}: {pokemon: Pokemon, favorite: boolean, handleClick: (e: any) => void}) {
+    const defBackgroundColor = favorite ? 'gold' : 'white';
+    
     return (
         <Pressable 
             onPress={handleClick}
             style={({pressed}) => [
                 styles.container,
                 {
-                    backgroundColor: pressed ? Colors.light.tint : 'white'
+                    backgroundColor: pressed ? Colors.light.tint : defBackgroundColor
                 }
             ]}
         >

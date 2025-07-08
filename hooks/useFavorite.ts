@@ -16,7 +16,7 @@ export default function useFavorite() {
 
     // Hook effect definition
     // - Applied each time parent component reloads
-    // - TODO: bind it to anything to prevent updates after each render
+    // - TODO: This is inefficient, bind it to anything to prevent updates after each render
     useEffect(() => {
         // Async wrapper for async storage access
         const loadFavorite = async () => {

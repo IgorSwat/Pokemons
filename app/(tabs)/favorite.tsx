@@ -1,3 +1,4 @@
+import { Pokemon } from "@/constants/types";
 import useFavorite from "@/hooks/useFavorite";
 import { StyleSheet, Text, View } from "react-native";
 import PokeCard from "../../components/PokeCard";
@@ -9,13 +10,13 @@ import PokeCard from "../../components/PokeCard";
 // TODO: Can details view be reused to replace this one?
 export default function Favorite() {
     // Component state
-    const pokemon = useFavorite();
+    const favorite = useFavorite();
 
     // Step 2 - render poke card
     // - If an error occured during fetching the data, display some dumb error text instead
     return (
         <View style={styles.mainView}>
-            {pokemon ? <PokeCard pokemon={pokemon} favorite={pokemon != null}/> :
+            {favorite ? <PokeCard pokemon={favorite as Pokemon} favorite={true}/> :
                        <Text style={{fontSize: 18}}>No favorite pokemon selected</Text>}
         </View>
     );

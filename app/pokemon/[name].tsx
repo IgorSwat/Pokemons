@@ -19,7 +19,7 @@ export default function Details() {
 
     // Component state
     const pokemon = usePokemon(name as string);
-    const favPokemon = useFavorite();
+    const favorite = useFavorite();
     const [isFavorite, setIsFavorite] = useState<boolean>(false);
 
     const navigation = useNavigation();
@@ -28,8 +28,8 @@ export default function Details() {
     // - We use async storage to obtain the information about which pokemon info should we display
     // - TODO: This can certainely be done in a better way
     useEffect(() => {
-        if (pokemon && favPokemon)
-            setIsFavorite(pokemon!.name === favPokemon!.name);
+        if (pokemon && favorite)
+            setIsFavorite(pokemon!.name === favorite!.name);
     }, [pokemon]);
 
     // Step 2 - render additional layout elements
@@ -40,21 +40,21 @@ export default function Details() {
     const handleChangeFavorite = async () => {
         // Remember to update the async storage to properly track the global state
         if (isFavorite)
-            AppStorage.remove("favorite");
+            await AppStorage.remove("favorite");
         else 
-            AppStorage.set("favorite", pokemon!.name);
+            await AppStorage.set("favorite", pokemon!.name);
 
         setIsFavorite(!isFavorite);
     };
 
     // Render header button with an appropriate icon
     useLayoutEffect(() => {
-        const iconName = isFavorite ? "heart-dislike-outline" : "heart-outline";
+        const iconName = isFavorite ? "star" : "star-outline";
 
         navigation.setOptions({
             headerRight: () => (
                 <TouchableOpacity onPress={handleChangeFavorite} style={{ marginRight: 10 }}>
-                    <Ionicons name={iconName} size={36} color="red" />
+                    <Ionicons name={iconName} size={36} color="gold" />
                 </TouchableOpacity>
             ),
             title: "Pokemon details"
