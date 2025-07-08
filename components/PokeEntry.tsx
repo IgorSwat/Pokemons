@@ -1,7 +1,7 @@
 import { Colors } from "@/constants/Colors";
 import { Pokemon } from "@/constants/types";
 
-import { Image, Pressable, StyleSheet, Text } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 // -----------------------
 // Pokemon entry component
@@ -20,9 +20,14 @@ export default function PokeEntry({pokemon, handleClick}: {pokemon: Pokemon, han
                 }
             ]}
         >
-            <Text style={styles.title}>
-                {pokemon.name.toUpperCase()}
-            </Text>
+            <View style={styles.titleSection}>
+                <Text style={styles.title}>
+                    {pokemon.name.toUpperCase()}
+                </Text>
+                <Text style={styles.index}>
+                    #{pokemon.id}
+                </Text>
+            </View>
             <Image
                 source={{uri: pokemon.sprites.front_default}}
                 style={styles.icon}
@@ -46,10 +51,21 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         elevation: 4,
     },
+    titleSection: {
+        minWidth: '30%',
+        maxWidth: '50%',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
     title: {
         fontSize: 18,
         fontWeight: '600',
         color: Colors.light.text,
+    },
+    index: {
+        fontSize: 14,
+        color: Colors.light.secondaryText,
     },
     icon: {
         height: "100%",

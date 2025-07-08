@@ -1,10 +1,11 @@
+import useFavorite from "@/hooks/useFavorite";
+import usePokemon from "@/hooks/usePokemon";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Pokemon } from "../constants/types";
-import AppStorage from "../storage/storage";
-import PokeCard from "./components/PokeCard";
+import PokeCard from "../../components/PokeCard";
+import AppStorage from "../../storage/storage";
 
 
 // --------------------
@@ -12,36 +13,24 @@ import PokeCard from "./components/PokeCard";
 // --------------------
 
 export default function Details() {
+    // Root parameters
+    // - Obtain pokemon ID from root parameters of the URL screen path
+    const { name } = useLocalSearchParams();
+
     // Component state
-    const navigation = useNavigation();
-    const [pokemon, setPokemon] = useState<Pokemon | null>(null);
+    const pokemon = usePokemon(name as string);
+    const favPokemon = useFavorite();
     const [isFavorite, setIsFavorite] = useState<boolean>(false);
+
+    const navigation = useNavigation();
 
     // Step 1 - load selected pokemon and favorite pokemon data
     // - We use async storage to obtain the information about which pokemon info should we display
     // - TODO: This can certainely be done in a better way
     useEffect(() => {
-        // Load selected pokemon info
-        const loadPokemon = async () => {
-            const selected = await AppStorage.get("selected") as Pokemon;
-            if (selected)
-                setPokemon(selected);
-            else
-                console.log("Error: lost info about selected pokemon");
-        }
-
-        // Load favorite pokemon info
-        const loadFavorite = async () => {
-            const favoritePokemon= await AppStorage.get("favorite") as Pokemon;
-            if (pokemon && favoritePokemon && favoritePokemon.name === pokemon.name)
-                setIsFavorite(true);
-            else
-                setIsFavorite(false);
-        }
-
-        loadPokemon();
-        loadFavorite();
-    }, [pokemon, isFavorite]);
+        if (pokemon && favPokemon)
+            setIsFavorite(pokemon!.name === favPokemon!.name);
+    }, [pokemon]);
 
     // Step 2 - render additional layout elements
     // - We use header button to allow user to choose pokemon as favorite
@@ -53,7 +42,7 @@ export default function Details() {
         if (isFavorite)
             AppStorage.remove("favorite");
         else 
-            AppStorage.set("favorite", pokemon);
+            AppStorage.set("favorite", pokemon!.name);
 
         setIsFavorite(!isFavorite);
     };
@@ -68,6 +57,7 @@ export default function Details() {
                     <Ionicons name={iconName} size={36} color="red" />
                 </TouchableOpacity>
             ),
+            title: "Pokemon details"
         });
     }, [pokemon, isFavorite]);
 

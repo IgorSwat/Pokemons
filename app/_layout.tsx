@@ -6,7 +6,7 @@ export default function RootLayout() {
     <>
       <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="details" options={{ headerShown: true, title: "Pokemon details" }} />
+          <Stack.Screen name="pokemon/[name]" options={{ headerShown: true }} />
       </Stack>
       <StatusBar style="auto" />
     </>
