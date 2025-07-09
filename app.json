@@ -9,14 +9,16 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.pokemons"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.anonymous.pokemons"
     },
     "web": {
       "bundler": "metro",
@@ -34,7 +36,13 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "react-native-vision-camera"
+      [
+        "react-native-maps",
+        {
+          "iosGoogleMapsApiKey": "AIzaSyDGm9azql91bmN5aQHWXsZ4AARYxhvtZL0",
+          "androidGoogleMapsApiKey": "AIzaSyDGm9azql91bmN5aQHWXsZ4AARYxhvtZL0"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

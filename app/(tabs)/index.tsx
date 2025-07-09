@@ -76,9 +76,9 @@ export default function Pokemons() {
 }
 
 
-// -----------------------------
-// Pokemon list component styles
-// -----------------------------
+// -------------------------------
+// Pokemon list component - styles
+// -------------------------------
 
 const styles = StyleSheet.create({
     container: {

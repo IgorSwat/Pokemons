@@ -1,5 +1,5 @@
 // app/(tabs)/_layout.tsx
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 
 
@@ -11,7 +11,7 @@ export default function TabsLayout() {
   return (
     <Tabs screenOptions={{ headerShown: true }}>
       <Tabs.Screen
-        name="pokemons"
+        name="index"
         options={{
           title: "Pokemons",
           tabBarIcon: ({ color, size }) => (
@@ -26,6 +26,16 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="heart-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="map"
+        options={{
+          title: "Map",
+          headerShown: false,
+          tabBarIcon: ({color, size}) => (
+            <FontAwesome name="map-marker" size={size} color={color} />
           ),
         }}
       />
