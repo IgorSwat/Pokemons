@@ -13,7 +13,7 @@ import { ActivityIndicator, FlatList, SafeAreaView, StyleSheet } from "react-nat
 // -----------------
 
 // Customizable component parameters
-const POKEMON_BATCH_SIZE = 16;      // Number of pokemons to load in each refresh
+const POKEMON_BATCH_SIZE = 16;      // Number of pokemons to load during each refresh
 
 // Pokemon list main component
 export default function Pokemons() {
@@ -23,7 +23,7 @@ export default function Pokemons() {
     // Component state
     const [pokemons, setPokemons] = useState<Pokemon[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
-    const favorite = useFavorite();
+    const {favorite, } = useFavorite();
 
     // Step 1 - loading pokemon data from Poke API
     const loadMorePokemons = async () => {

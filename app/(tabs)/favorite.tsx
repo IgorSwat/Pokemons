@@ -10,7 +10,7 @@ import PokeCard from "../../components/PokeCard";
 // TODO: Can details view be reused to replace this one?
 export default function Favorite() {
     // Component state
-    const favorite = useFavorite();
+    const {favorite, } = useFavorite();
 
     // Step 2 - render poke card
     // - If an error occured during fetching the data, display some dumb error text instead

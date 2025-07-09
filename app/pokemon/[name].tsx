@@ -5,7 +5,6 @@ import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import PokeCard from "../../components/PokeCard";
-import AppStorage from "../../storage/storage";
 
 
 // --------------------
@@ -19,18 +18,16 @@ export default function Details() {
 
     // Component state
     const pokemon = usePokemon(name as string);
-    const favorite = useFavorite();
+    const {favorite, changeFavorite} = useFavorite();
     const [isFavorite, setIsFavorite] = useState<boolean>(false);
 
     const navigation = useNavigation();
 
-    // Step 1 - load selected pokemon and favorite pokemon data
-    // - We use async storage to obtain the information about which pokemon info should we display
-    // - TODO: This can certainely be done in a better way
+    // Step 1 - load and compare selected pokemon and favorite pokemon data
     useEffect(() => {
         if (pokemon && favorite)
             setIsFavorite(pokemon!.name === favorite!.name);
-    }, [pokemon]);
+    }, [pokemon, favorite]);
 
     // Step 2 - render additional layout elements
     // - We use header button to allow user to choose pokemon as favorite
@@ -38,30 +35,27 @@ export default function Details() {
 
     // A handler for setting / removing a favorite pokemon
     const handleChangeFavorite = async () => {
-        // Remember to update the async storage to properly track the global state
-        if (isFavorite)
-            await AppStorage.remove("favorite");
-        else 
-            await AppStorage.set("favorite", pokemon!.name);
-
+        changeFavorite(!isFavorite ? pokemon!.name : null)
         setIsFavorite(!isFavorite);
     };
 
-    // Render header button with an appropriate icon
+    // Step 3 - render header button with an appropriate icon
     useLayoutEffect(() => {
-        const iconName = isFavorite ? "star" : "star-outline";
+        if (pokemon) {
+            const iconName = isFavorite ? "star" : "star-outline";
 
-        navigation.setOptions({
-            headerRight: () => (
-                <TouchableOpacity onPress={handleChangeFavorite} style={{ marginRight: 10 }}>
-                    <Ionicons name={iconName} size={36} color="gold" />
-                </TouchableOpacity>
-            ),
-            title: "Pokemon details"
-        });
+            navigation.setOptions({
+                headerRight: () => (
+                    <TouchableOpacity onPress={handleChangeFavorite} style={styles.starButton}>
+                        <Ionicons name={iconName} size={36} color="gold" />
+                    </TouchableOpacity>
+                ),
+                title: "Pokemon details"
+            });
+        }
     }, [pokemon, isFavorite]);
 
-    // Step 3 - render poke card
+    // Step 4 - render poke card
     return (
         <View style={styles.mainView}>
             {pokemon ? <PokeCard pokemon={pokemon} favorite={isFavorite}/> :
@@ -81,4 +75,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
+    starButton: {
+        marginRight: 10,
+    }
 });

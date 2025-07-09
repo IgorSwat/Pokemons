@@ -55,10 +55,10 @@ const styles = StyleSheet.create({
     },
     titleSection: {
         minWidth: '30%',
-        maxWidth: '50%',
+        maxWidth: '60%',
         flexDirection: 'column',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'flex-start'
     },
     title: {
         fontSize: 18,
