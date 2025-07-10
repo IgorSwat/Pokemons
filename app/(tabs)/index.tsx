@@ -1,5 +1,5 @@
 import { fetchPokemonNames, fetchPokemons } from "@/api/requests";
-import { Pokemon } from "@/constants/types";
+import { Pokemon } from "@/constants/types/pokemon";
 import PokeEntry from "../../components/PokeEntry";
 
 import useFavorite from "@/hooks/useFavorite";

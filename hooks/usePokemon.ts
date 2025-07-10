@@ -1,5 +1,5 @@
 import fetchPokemon from "@/api/requests";
-import { Pokemon } from "@/constants/types";
+import { Pokemon } from "@/constants/types/pokemon";
 import { useEffect, useState } from "react";
 
 

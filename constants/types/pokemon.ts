@@ -1,16 +1,9 @@
-// ----------------------
-// Data types - universal
-// ----------------------
+import { Resource } from "./common";
 
-// Universal data type - resource info
-export interface Resource {
-    name: string;
-    url: string;
-};
 
-// --------------------
-// Data types - pokemon
-// --------------------
+// -------------------------
+// Data types - pokemon data
+// -------------------------
 
 // Data type - main pokemon type
 export interface Pokemon {
