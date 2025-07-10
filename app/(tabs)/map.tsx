@@ -25,7 +25,7 @@ export default function PokeMap() {
         // Temporary, hardcoded version - pointing out Cracov
         // TODO: add initializing based on user's localization with something like Geolocation library
         const initialCenter = { latitude: 50.049683, longitude: 19.944544 };
-        const initialScale = { latitudeDelta: 0.0922, longitudeDelta: 0.0431 };
+        const initialScale = { latitudeDelta: 0.02, longitudeDelta: 0.01 };
 
         setMapState({center: initialCenter, scale: initialScale});
         setEffCenter(initialCenter);

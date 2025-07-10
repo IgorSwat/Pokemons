@@ -1,10 +1,9 @@
-import { fetchPokemonNames, fetchPokemons } from "@/api/requests";
 import { Pokemon } from "@/constants/types/pokemon";
 import PokeEntry from "../../components/PokeEntry";
 
 import useFavorite from "@/hooks/useFavorite";
+import usePokemonList from "@/hooks/usePokemonList";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, SafeAreaView, StyleSheet } from "react-native";
 
 
@@ -21,36 +20,8 @@ export default function Pokemons() {
     const router = useRouter();
 
     // Component state
-    const [pokemons, setPokemons] = useState<Pokemon[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
+    const {pokemons, loading, loadMorePokemons} = usePokemonList(POKEMON_BATCH_SIZE);
     const {favorite, } = useFavorite();
-
-    // Step 1 - loading pokemon data from Poke API
-    const loadMorePokemons = async () => {
-        // Optimize realoding process by stopping unnecessary reloads when there is an already ongoing reload
-        if (loading)
-            return;
-
-        // Mark the beginning of a loading process
-        // - Only one reload available at time
-        setLoading(true);
-
-        const names = await fetchPokemonNames(pokemons.length, POKEMON_BATCH_SIZE);
-        const data = await fetchPokemons(names);
-
-        if (data && data.length > 0) {
-            // Update data
-            // - We use an arrow function to access previous state and build new state based on previous one
-            setPokemons((prev) => [...prev, ...data]);
-        }
-
-        // Mark the end of loading process
-        setLoading(false);
-    };
-
-    useEffect(() => {
-        loadMorePokemons();
-    }, []);
 
     // Step 2 - navigation between views
     // - We want to navigate to the pokemon view after clicking one of the list entries
@@ -67,8 +38,8 @@ export default function Pokemons() {
                 data={pokemons}
                 renderItem={({item}) => <PokeEntry pokemon={item} favorite={item.name === favorite?.name} handleClick={() => handleItemClick(item)} />}
                 keyExtractor={(item) => item.id.toString()}
-                onEndReached={loadMorePokemons}
-                onEndReachedThreshold={0.3}
+                onEndReached={() => loadMorePokemons(POKEMON_BATCH_SIZE)}
+                onEndReachedThreshold={0.5}
                 ListFooterComponent={loading ? <ActivityIndicator style={{ margin: 20 }} /> : null}
             />
         </SafeAreaView>
