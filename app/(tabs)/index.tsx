@@ -11,11 +11,11 @@ import { ActivityIndicator, FlatList, SafeAreaView, StyleSheet } from "react-nat
 // Pokemon list view
 // -----------------
 
-// Customizable component parameters
-const POKEMON_BATCH_SIZE = 16;      // Number of pokemons to load during each refresh
-
 // Pokemon list main component
 export default function Pokemons() {
+    // Customizable component parameters
+    const POKEMON_BATCH_SIZE = 16;      // Number of pokemons to load during each refresh
+
     // Navigation state
     const router = useRouter();
 

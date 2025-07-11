@@ -9,6 +9,8 @@ import { useEffect, useState } from "react";
 // - Allows to filter items based on given center of the map and maximal proximity radius (in metres)
 export default function useMapItems({center, radius} : {center: Coords | undefined, radius: number | undefined}) {
     // Hook state
+    // - Using an internal pokemon list is only suitable for this small project
+    //   In real, big-scale app there should be a separate backend with something like R-tree to store and load pokemon locations
     const [allPokemons, setAllPokemons] = useState<Pokemon[]>([]);              // Full list of pokemons (replace with async storage?)
     const [visiblePokemons, setVisiblePokemons] = useState<Pokemon[]>([]);      // Pokemons to render
 
@@ -24,12 +26,11 @@ export default function useMapItems({center, radius} : {center: Coords | undefin
     // - External function, called outside the hook each time a new pokemon is added
     // - TODO: add persisting data in async storage
     const addPokemon = (pokemon: Pokemon): void => {
-        // First, add pokemon to the full list
-        setAllPokemons((prevList) => [...prevList, pokemon]);
-
-        // If the pokemon is inside the render area, add it to filtered list
-        if (!center || !radius || distance(center, pokemon.coords) < radius)
+        // Do not add pokemons which are outside the range
+        if (!center || !radius || distance(center, pokemon.coords) < radius) {
+            setAllPokemons((prevList) => [...prevList, pokemon]);
             setVisiblePokemons((prevList) => [...prevList, pokemon]);
+        }
     };
 
     // Step 3 - return visible pokemons and external addPokemon setter
