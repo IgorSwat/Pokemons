@@ -5,7 +5,7 @@ import useMapItems from "@/hooks/useMapItems";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
-import MapView, { MapPressEvent } from "react-native-maps";
+import MapView, { LongPressEvent, MapPressEvent } from "react-native-maps";
 
 import * as Location from 'expo-location';
 
@@ -91,20 +91,23 @@ export default function PokeMap() {
 
     // Step 3 - map click handlers
 
-    // Main map click handler
-    // - Different behavior depending on what has been clicked (marker, map, ...)
-    const onMapClick = (event: MapPressEvent): void => {
-        // Save click coordinates
+    // Main map click handler - short press
+    // - Removes focus from any marker
+    const onMapShortClick = (event: MapPressEvent): void => {
         lastClickCoords.current = event.nativeEvent.coordinate;
 
         // Remove selected marker (if exists) after clicking anywhere else on the map
-        if (selectedMarker && event.nativeEvent.action !== "marker-press") {
+        if (selectedMarker && event.nativeEvent.action !== "marker-press")
             setSelectedMarker(null);
-        }
-        // Otherwise, if no marker is selected, open bottom tab for selecting new pokemon
-        else if (event.nativeEvent.action !== "marker-press")
-            setIsBottomTabVisible(true);
     }
+
+    // Main map click handler - long press
+    // - Activates pokemon selection tab
+    const onMapLongClick = (event: LongPressEvent): void => {
+        lastClickCoords.current = event.nativeEvent.coordinate;
+
+        setIsBottomTabVisible(true);
+    };
 
     // Handle adding new pokemon after selection stage
     const onSelectPokemon = (name: string): void => {
@@ -132,7 +135,8 @@ export default function PokeMap() {
                     ...mapState.scale
                 }}
                 onRegionChange={onRegionChange}
-                onPress={onMapClick}
+                onPress={onMapShortClick}
+                onLongPress={onMapLongClick}
                 style={styles.container}
             >
                 {visiblePokemons.map((pokemon: Pokemon, idx: number) => (
