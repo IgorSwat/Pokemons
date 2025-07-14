@@ -1,8 +1,7 @@
-import { Pokemon } from "@/constants/types/map";
+import { Coords, Pokemon } from "@/constants/types/map";
 import usePokemon from "@/hooks/usePokemon";
 import { ImageBackground } from "expo-image";
 import { useRouter } from "expo-router";
-import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Marker } from "react-native-maps";
 
@@ -12,10 +11,11 @@ import { Marker } from "react-native-maps";
 // ------------------------
 
 // A marker displayed on pokemon map inside the map tab
-export default function PokeMarker({item}: {item: Pokemon}) {
+export default function PokeMarker({item, isSelected, select}: {item: Pokemon, isSelected: boolean, select: (pos: Coords | null) => void}) {
     // Component state
-    const [isSelected, setIsSelected] = useState<boolean>(false);
-    const pokemon = usePokemon(item.name as string);
+    // - Passing item.name only after marker has been selected prevents unnecessary fetches inside usePokemon hook,
+    //   since we do not need to display pokemon's icon if the marker is not selected
+    const pokemon = usePokemon( isSelected ? item.name as string : null);
 
     // Navigation state
     const router = useRouter();
@@ -25,8 +25,8 @@ export default function PokeMarker({item}: {item: Pokemon}) {
         <Marker
             coordinate={item.coords}
             title={item.name}
-            onSelect={() => setIsSelected(true)}
-            onDeselect={() => setIsSelected(false)}
+            onSelect={() => select(item.coords)}
+            onDeselect={() => select(null)}
             onPress={() => {
                 if (isSelected) router.push({pathname: "/pokemon/[name]", params: {name: item.name}});
             }}

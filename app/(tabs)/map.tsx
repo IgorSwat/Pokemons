@@ -1,6 +1,6 @@
 import PokeMarker from "@/components/PokeMarker";
 import SelectionBottomTab from "@/components/SelectionBottomTab";
-import { Coords, distance, Pokemon, State } from "@/constants/types/map";
+import { Coords, distance, equals, Pokemon, State } from "@/constants/types/map";
 import useMapItems from "@/hooks/useMapItems";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -25,6 +25,7 @@ export default function PokeMap() {
     const [effCenter, setEffCenter] = useState<Coords | undefined>(undefined);
 
     const {visiblePokemons, addPokemon} = useMapItems({center: effCenter, radius: MAX_RENDER_RADIUS});
+    const [selectedMarker, setSelectedMarker] = useState<Coords | null>(null);
 
     const [isBottomTabVisible, setIsBottomTabVisible] = useState<boolean>(false);
 
@@ -46,6 +47,7 @@ export default function PokeMap() {
     useFocusEffect(
         useCallback(() => {
             setIsActive(true);
+            setSelectedMarker(null);
             return () => setIsActive(false);
         }, [])
     );
@@ -74,12 +76,13 @@ export default function PokeMap() {
         // Save click coordinates
         lastClickCoords.current = event.nativeEvent.coordinate;
 
-        // Omit marker clicks for now
-        // TODO: display a small screen showing pokemon corresponding to the marker
-        if (event.nativeEvent.action === "marker-press")
-            return;
-
-        setIsBottomTabVisible(true);
+        // Remove selected marker (if exists) after clicking anywhere else on the map
+        if (selectedMarker && event.nativeEvent.action !== "marker-press") {
+            setSelectedMarker(null);
+        }
+        // Otherwise, if no marker is selected, open bottom tab for selecting new pokemon
+        else if (event.nativeEvent.action !== "marker-press")
+            setIsBottomTabVisible(true);
     }
 
     // Handle adding new pokemon after selection stage
@@ -108,7 +111,12 @@ export default function PokeMap() {
                 style={styles.container}
             >
                 {visiblePokemons.map((pokemon: Pokemon, idx: number) => (
-                    <PokeMarker key={idx} item={pokemon} />
+                    <PokeMarker 
+                        key={idx} 
+                        item={pokemon} 
+                        isSelected={(selectedMarker && equals(selectedMarker!, pokemon.coords)) as boolean}
+                        select={(pos: Coords | null) => setSelectedMarker(pos)}
+                    />
                 ))}
             </MapView>
             <SelectionBottomTab 

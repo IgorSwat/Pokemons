@@ -23,6 +23,11 @@ export interface State {
 // - Latitude defines the SOUTH-NORTH coordinate, and longtitude defines the WEST-EAST coordinate
 export type Coords = LatLng;
 
+// Comparision function
+export function equals(x1: Coords, x2: Coords): boolean {
+    return x1.latitude === x2.latitude && x1.longitude === x2.longitude;
+}
+
 // Converts latitude difference to meters
 export function latToMetres(latDelta: number) : number {
     return latDelta * (Math.PI / 180) * R;
