@@ -3,7 +3,8 @@ import { Coords, distance, Pokemon, State } from "@/constants/types/map";
 import useMapItems from "@/hooks/useMapItems";
 import usePokemonList from "@/hooks/usePokemonList";
 import { Ionicons } from "@expo/vector-icons";
-import { useEffect, useRef, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Dimensions, FlatList, Modal, Pressable, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import MapView, { MapPressEvent, Marker } from "react-native-maps";
 
@@ -19,6 +20,8 @@ export default function PokeMap() {
 
     // Component state
     // - effCenter is an effective center, which is used to obtain visible map markers and updated less frequently than real center
+    const [isActive, setIsActive] = useState<boolean>(false);   // Necessary to stop unmounting the component
+
     const [mapState, setMapState] = useState<State | undefined>(undefined);
     const [effCenter, setEffCenter] = useState<Coords | undefined>(undefined);
 
@@ -38,6 +41,15 @@ export default function PokeMap() {
         setMapState({center: initialCenter, scale: initialScale});
         setEffCenter(initialCenter);
     }, []);
+
+    // A side method to prevent unnecessary renders of the component and eliminate some bugs
+    // - Keeping MapView active while being on another tab causes some weird issues with props and map state
+    useFocusEffect(
+        useCallback(() => {
+            setIsActive(true);
+            return () => setIsActive(false);
+        }, [])
+    );
 
     // Step 2 - map state handlers
     const onRegionChange = (region: any) => {
@@ -78,12 +90,14 @@ export default function PokeMap() {
     };
 
     // Step 4 - render map component
-    if (!mapState)
+    // TODO: Huge issue - after changing the tab, the map not only forgets it's initialRegion, but also disconnects any handlers
+    if (!mapState || !isActive)
         return <View style={styles.container}> <Text>Failed to load map</Text> </View>;
 
     return (
         <>
             <MapView
+                provider="google"
                 userInterfaceStyle="light"
                 mapType="terrain"
                 initialRegion={{
@@ -136,22 +150,32 @@ function BottomTab({visible, handleSelect, handleClose}: any) {
             onRequestClose={handleClose}
         >
             <SafeAreaView style={styles.bottomTabContainer}>
-                <Pressable 
-                    onPress={handleClose} 
-                    style={({ pressed }) => [
-                        styles.closeButton,
-                        pressed && styles.closeButtonPressed
-                    ]}
-                >
-                    <Ionicons name="close" size={30} color={'black'} />
-                </Pressable>
+                <View style={styles.tabNavbar}>
+                    <Text style={styles.tabText}>
+                        Select pokemon
+                    </Text>
+                    <Pressable 
+                        onPress={handleClose} 
+                        style={({ pressed }) => [
+                            styles.closeButton,
+                            pressed && styles.closeButtonPressed
+                        ]}
+                    >
+                        <Ionicons name="close" size={30} color={'black'} />
+                    </Pressable>
+                </View>
                 <FlatList 
                     data={pokemons}
                     numColumns={Math.floor((Dimensions.get('window').width - 48) / (ICON_SIZE + ICON_MARGINS.horizontal * 2))}
                     renderItem={({item}) => <PokeIcon
                         pokemon={item}
-                        dims={{size: ICON_SIZE, margins: ICON_MARGINS}}
                         handleClick={() => { handleSelect(item.name); handleClose(); }}
+                        style={{
+                            width: ICON_SIZE,
+                            height: ICON_SIZE,
+                            marginHorizontal: ICON_MARGINS.horizontal,
+                            marginBottom: ICON_MARGINS.bottom
+                        }}
                     />}
                     keyExtractor={(item) => item.id.toString()}
                     onEndReached={() => loadMorePokemons(POKEMON_BATCH_SIZE)}
@@ -174,23 +198,25 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     bottomTabContainer: {
-        position: "relative",
         width: "100%",
         height: "100%",
         padding: 24,
-        paddingTop: 60,
         flexDirection: "column",
         alignItems: "center",
         backgroundColor: "white"
     },
-    bottomTabList: {
+    tabNavbar: {
         width: "100%",
-        paddingTop: 20
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center"
+    },
+    tabText: {
+        fontSize: 24,
+        paddingBottom: 10,
+        fontWeight: '600'
     },
     closeButton: {
-        position: "absolute",
-        top: 10,
-        right: 10,
         backgroundColor: '#eee',
         paddingHorizontal: 12,
         paddingVertical: 6,
@@ -203,5 +229,9 @@ const styles = StyleSheet.create({
     closeButtonText: {
         fontSize: 18,
         fontWeight: 'bold'
+    },
+    bottomTabList: {
+        width: "100%",
+        paddingTop: 20
     }
 });

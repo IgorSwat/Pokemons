@@ -8,7 +8,7 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 // ----------------------
 
 // Represents a pressable icon with customizable size and tooltip
-export default function PokeIcon({ pokemon, dims, handleClick }: { pokemon: Pokemon, dims: PokeIconSize, handleClick: () => void }) {
+export default function PokeIcon({ pokemon, handleClick, style }: { pokemon: Pokemon, handleClick: () => void, style: any }) {
     // Component state
     const [isPressed, setPressed] = useState(false);
     const [isLongPressed, setIsLongPressed] = useState(false);
@@ -48,12 +48,12 @@ export default function PokeIcon({ pokemon, dims, handleClick }: { pokemon: Poke
                 style={({ pressed }) => [
                     styles.iconContainer,
                     {
-                        width: dims.size,
-                        height: dims.size,
-                        borderRadius: dims.size * 0.2,
-                        marginLeft: dims.margins.horizontal,
-                        marginRight: dims.margins.horizontal,
-                        marginBottom: dims.margins.bottom
+                        width: style.width,
+                        height: style.height,
+                        borderRadius: (style.width + style.height) * 0.1,
+                        ...(style.marginHorizontal !== undefined && { marginHorizontal: style.marginHorizontal }),
+                        ...(style.marginTop !== undefined && { marginTop: style.marginTop }),
+                        ...(style.marginBottom !== undefined && { marginBottom: style.marginBottom })
                     },
                     pressed || isPressed ? styles.iconPressed : styles.iconDefault
                 ]}
@@ -68,19 +68,6 @@ export default function PokeIcon({ pokemon, dims, handleClick }: { pokemon: Poke
 }
 
 
-// -----------------------------------
-// Pokemon icon component - prop types
-// -----------------------------------
-
-export interface PokeIconSize {
-    size: number;
-    margins: {
-        horizontal: number;
-        bottom: number;
-    };
-};
-
-
 // -------------------------------
 // Pokemon icon component - styles
 // -------------------------------
@@ -92,7 +79,7 @@ const styles = StyleSheet.create({
     },
     iconContainer: {
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
     },
     iconDefault: {
         backgroundColor: "#fff",
