@@ -4,8 +4,10 @@ import { Coords, distance, equals, Pokemon, State } from "@/constants/types/map"
 import useMapItems from "@/hooks/useMapItems";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import MapView, { MapPressEvent } from "react-native-maps";
+
+import * as Location from 'expo-location';
 
 
 // ----------------
@@ -33,13 +35,32 @@ export default function PokeMap() {
 
     // Step 1 - component state initialization
     useEffect(() => {
-        // Temporary, hardcoded version - pointing out Cracov
-        // TODO: add initializing based on user's localization with something like Geolocation library
-        const initialCenter = { latitude: 50.049683, longitude: 19.944544 };
-        const initialScale = { latitudeDelta: 0.02, longitudeDelta: 0.01 };
+        // Cracov coordinates
+        let initialCenter = { latitude: 50.049683, longitude: 19.944544 };
+        let initialScale = { latitudeDelta: 0.02, longitudeDelta: 0.01 };
 
-        setMapState({center: initialCenter, scale: initialScale});
-        setEffCenter(initialCenter);
+        // Async wrapper for localization API
+        // - Use expo-location to obtain current location coordinates
+        // - San Francisco by default (?)
+        const getLocation = async (): Promise<Coords | void> => {
+            const { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                console.log("Error: permission to access location was denied");
+                return;
+            }
+
+            const location = await Location.getCurrentPositionAsync({});
+            
+            return {latitude: location.coords.latitude, longitude: location.coords.longitude};
+        };
+
+        getLocation().then(location => {
+            if (location) initialCenter = location;
+            else console.log("Setting up Cracov instead...");
+
+            setMapState({center: initialCenter, scale: initialScale});
+            setEffCenter(initialCenter);
+        });
     }, []);
 
     // A side method to prevent unnecessary renders of the component and eliminate some bugs
@@ -92,9 +113,13 @@ export default function PokeMap() {
     };
 
     // Step 4 - render map component
-    // TODO: Huge issue - after changing the tab, the map not only forgets it's initialRegion, but also disconnects any handlers
-    if (!mapState || !isActive)
-        return <View style={styles.container}> <Text>Failed to load map</Text> </View>;
+    if (!mapState || !isActive) {
+        return (
+            <View style={styles.container}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        );
+    }
 
     return (
         <>
@@ -136,5 +161,7 @@ export default function PokeMap() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
     },
 });
