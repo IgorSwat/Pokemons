@@ -55,7 +55,7 @@ export default function Details() {
                 headerRight: () => (
                     <View style={{flexDirection: "row", alignItems: "center"}} >
                         <TouchableOpacity onPress={handleOpenCamera} style={{marginHorizontal: 10}}>
-                            <Ionicons name="camera" size={36} color="#000000" />
+                            <Ionicons name="camera" size={36} color="#333333" />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={handleChangeFavorite}>
                             <Ionicons name={starIconName} size={36} color="gold" />
