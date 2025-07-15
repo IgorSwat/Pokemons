@@ -8,6 +8,7 @@ export default function RootLayout() {
       <Stack initialRouteName="(tabs)">
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="pokemon/[name]" options={{ headerShown: true }} />
+          <Stack.Screen name="camera/[name" options={{ headerShown: true }} />
       </Stack>
       <StatusBar style="auto" />
     </AppProvider>

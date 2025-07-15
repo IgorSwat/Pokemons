@@ -1,7 +1,7 @@
 import useFavorite from "@/hooks/useFavorite";
 import usePokemon from "@/hooks/usePokemon";
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import PokeCard from "../../components/PokeCard";
@@ -21,6 +21,8 @@ export default function Details() {
     const {favorite, changeFavorite} = useFavorite();
     const [isFavorite, setIsFavorite] = useState<boolean>(false);
 
+    // Navigation state
+    const router = useRouter();
     const navigation = useNavigation();
 
     // Step 1 - load and compare selected pokemon and favorite pokemon data
@@ -39,16 +41,26 @@ export default function Details() {
         setIsFavorite(!isFavorite);
     };
 
+    // Move to camera view handler
+    const handleOpenCamera = () => {
+        router.push({pathname: "/camera/[name]", params: {name: pokemon!.name}});
+    };
+
     // Step 3 - render header button with an appropriate icon
     useLayoutEffect(() => {
         if (pokemon) {
-            const iconName = isFavorite ? "star" : "star-outline";
+            const starIconName = isFavorite ? "star" : "star-outline";
 
             navigation.setOptions({
                 headerRight: () => (
-                    <TouchableOpacity onPress={handleChangeFavorite} style={styles.starButton}>
-                        <Ionicons name={iconName} size={36} color="gold" />
-                    </TouchableOpacity>
+                    <View style={{flexDirection: "row", alignItems: "center"}} >
+                        <TouchableOpacity onPress={handleOpenCamera} style={{marginHorizontal: 10}}>
+                            <Ionicons name="camera" size={36} color="#000000" />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={handleChangeFavorite}>
+                            <Ionicons name={starIconName} size={36} color="gold" />
+                        </TouchableOpacity>
+                    </View>
                 ),
                 title: "Pokemon details"
             });
@@ -75,7 +87,4 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
-    starButton: {
-        marginRight: 10,
-    }
 });

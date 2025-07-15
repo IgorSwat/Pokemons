@@ -28,7 +28,7 @@ export default function Pokemons() {
     // - Save selected pokemon in async storage to render details tab easier
     const handleItemClick = async (item: Pokemon) => { 
         // Route to the details tab
-        router.push({pathname: "../pokemon/[name]", params: {name: item.name}});
+        router.push({pathname: "/pokemon/[name]", params: {name: item.name}});
     };
 
     // Step 3 - render pokemon data with FlatList
