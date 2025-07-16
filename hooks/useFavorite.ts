@@ -20,6 +20,7 @@ export default function useFavorite() {
     // Hook effect definition
     // - Applied at the component initialization stage
     // - Tries to load favPokemonName from async storage if global value from AppContext is not defined
+    // - TODO: move favPokemonName handling to ContextProvider
     useEffect(() => {
         // Async wrapper for async storage access
         const loadFavorite = async () => {

@@ -24,9 +24,11 @@ export default function PokeMap() {
     const [isActive, setIsActive] = useState<boolean>(false);   // Necessary to stop unmounting the component
 
     const [mapState, setMapState] = useState<State | undefined>(undefined);
+    // TODO: Move to useMapItems hook
     const [effCenter, setEffCenter] = useState<Coords | undefined>(undefined);
 
     const {visiblePokemons, addPokemon} = useMapItems({center: effCenter, radius: MAX_RENDER_RADIUS});
+    // TODO: Add ID to Pokemon structure
     const [selectedMarker, setSelectedMarker] = useState<Coords | null>(null);
 
     const [isBottomTabVisible, setIsBottomTabVisible] = useState<boolean>(false);
@@ -42,6 +44,7 @@ export default function PokeMap() {
         // Async wrapper for localization API
         // - Use expo-location to obtain current location coordinates
         // - San Francisco by default (?)
+        // - TODO: Always return default location
         const getLocation = async (): Promise<Coords | void> => {
             const { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
@@ -141,7 +144,7 @@ export default function PokeMap() {
             >
                 {visiblePokemons.map((pokemon: Pokemon, idx: number) => (
                     <PokeMarker 
-                        key={idx} 
+                        key={idx}   // TODO: Do not use array index as a key
                         item={pokemon} 
                         isSelected={(selectedMarker && equals(selectedMarker!, pokemon.coords)) as boolean}
                         select={(pos: Coords | null) => setSelectedMarker(pos)}

@@ -43,7 +43,7 @@ export default function Details() {
 
     // Move to camera view handler
     const handleOpenCamera = () => {
-        router.push({pathname: "/camera/[name]", params: {name: pokemon!.name}});
+        router.push({pathname: "/camera/[name]", params: {name: name as string}});
     };
 
     // Step 3 - render header button with an appropriate icon

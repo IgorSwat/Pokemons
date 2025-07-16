@@ -1,11 +1,12 @@
+import usePokemon from "@/hooks/usePokemon";
 import { Feather } from "@expo/vector-icons";
-import { ClipOp, Skia, TileMode } from "@shopify/react-native-skia";
+import { Skia, useImage } from "@shopify/react-native-skia";
 import { useLocalSearchParams, useNavigation } from "expo-router";
-import { useEffect, useLayoutEffect, useRef } from "react";
-import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Button, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import { DrawableFrame, Frame, useCameraDevice, useCameraPermission, Camera as VisionCamera } from "react-native-vision-camera";
-import { Camera, Contours, Face, FaceDetectionOptions } from "react-native-vision-camera-face-detector";
+import { CameraPosition, DrawableFrame, Frame, useCameraDevice, useCameraPermission, Camera as VisionCamera } from "react-native-vision-camera";
+import { Camera, Face, FaceDetectionOptions } from "react-native-vision-camera-face-detector";
 
 
 // -------------------
@@ -19,7 +20,8 @@ export default function PokeCam() {
 
     // Component state - camera properties
     const { hasPermission, requestPermission } = useCameraPermission();
-    const device = useCameraDevice("back");
+    const [ cameraFacing, setCameraFacing ] = useState<CameraPosition>("front");
+    const device = useCameraDevice(cameraFacing);
     const camera = useRef<VisionCamera>(null);
     const { width, height } = useWindowDimensions();
 
@@ -52,6 +54,11 @@ export default function PokeCam() {
         top: withTiming(aFaceY.value, { duration: 100 }),
         transform: [{ rotate: `${aRot.value}deg` }],
     }));
+
+    // Component state - connected pokemon
+    const pokemon = usePokemon(name as string);
+    const image = useImage(pokemon?.sprites.front_default);
+    const imagePaint = Skia.Paint();
 
     // Navigation state
     const navigation = useNavigation();
@@ -95,47 +102,11 @@ export default function PokeCam() {
     const handleSkiaAction = (faces: Face[], frame: DrawableFrame): void => {
         'worklet'
 
-        // If we do not detect any face, there is nothing to do
-        if (faces.length == 0) return;
-
-        // Extract the first detected face
-        const { bounds, contours, landmarks } = faces[ 0 ];
-
-        // Temporary code from github example of face-detection plugin
-        // draw a blur shape around the face points
-        const blurRadius = 25
-        const blurFilter = Skia.ImageFilter.MakeBlur(
-            blurRadius,
-            blurRadius,
-            TileMode.Repeat,
-            null
-        )
-        const blurPaint = Skia.Paint()
-        blurPaint.setImageFilter( blurFilter )
-        const contourPath = Skia.Path.Make()
-        const necessaryContours: ( keyof Contours )[] = [
-            'FACE',
-            'LEFT_CHEEK',
-            'RIGHT_CHEEK'
-        ]
-
-        necessaryContours.map( ( key ) => {
-            contours?.[ key ]?.map( ( point, index ) => {
-                if ( index === 0 ) {
-                // it's a starting point
-                contourPath.moveTo( point.x, point.y )
-                } else {
-                // it's a continuation
-                contourPath.lineTo( point.x, point.y )
-                }
-            } )
-            contourPath.close()
-        } );
-
-        frame.save()
-        frame.clipPath( contourPath, ClipOp.Intersect, true )
-        frame.render( blurPaint )
-        frame.restore()
+        if (faces.length === 0 || !image) return;
+        const { x, y, width, height } = faces[0].bounds;
+        const src = Skia.XYWHRect(0, 0, image.width(), image.height());
+        const dst = Skia.XYWHRect(x, y, width, height);
+        frame.drawImageRect(image, src, dst, imagePaint);
     };
 
     // Step 3 - render component
@@ -168,21 +139,33 @@ export default function PokeCam() {
     // Main screen - camera view
     return (
         <>
-            <Camera
-                ref={camera}
-                style={StyleSheet.absoluteFill}
-                device={device}
-                isActive={true}
-                onUIRotationChanged={handleCameraRotation}
-                faceDetectionCallback={handleFaceDetection}    // tmp
-                skiaActions={handleSkiaAction}              // tmp
-                faceDetectionOptions={{
-                    ...faceDetectionOptions
-                }}
-            />
-            <Animated.View
-                style={ boundingBoxStyle }
-            />
+            <View style={styles.container}>
+                <Camera
+                    ref={camera}
+                    style={StyleSheet.absoluteFill}
+                    device={device}
+                    isActive={true}
+                    onUIRotationChanged={handleCameraRotation}
+                    faceDetectionCallback={handleFaceDetection}
+                    skiaActions={handleSkiaAction}
+                    faceDetectionOptions={{
+                        ...faceDetectionOptions,
+                        autoMode: false,
+                        cameraFacing: cameraFacing
+                    }}
+                />
+                <Animated.View
+                    style={ boundingBoxStyle }
+                />
+            </View>
+            <View style={styles.cameraNavContainer}>
+                <View style={styles.cameraNavRow}>
+                    <Button
+                        onPress={ () => setCameraFacing( ( current ) => (current === 'front' ? 'back' : 'front') ) }
+                        title={ 'Toggle Cam' }
+                    />
+                </View>
+            </View>
         </>
     );
 }
@@ -201,5 +184,19 @@ const styles = StyleSheet.create({
     errorLabel: {
         fontSize: 24,
         fontWeight: '600'
+    },
+    cameraNavContainer: {
+        position: 'absolute',
+        bottom: 50,
+        left: 0,
+        right: 0,
+        display: 'flex',
+        flexDirection: 'column'
+    },
+    cameraNavRow: {
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-around'
     }
 });

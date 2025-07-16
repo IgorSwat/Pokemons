@@ -33,6 +33,7 @@ export default function PokeMarker({item, isSelected, select}: {item: Pokemon, i
         >
             <View style={styles.iconContainer}>
                 {/* Weird stuff below, but at least it works... */}
+                {/* TODO: split logic to simpler parts */}
                 {isSelected && pokemon && (<ImageBackground source={{ uri: pokemon!.sprites.front_default }} style={styles.pokeImage} /> )}
                 {(!isSelected || !pokemon) && (<ImageBackground source={require('@/assets/images/icons/poke-ball.png')} style={styles.pokeBall} />)}
             </View>
