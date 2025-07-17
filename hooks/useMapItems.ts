@@ -1,6 +1,14 @@
 import { Coords, distance, Pokemon } from "@/constants/types/map";
 import { useEffect, useState } from "react";
 
+
+// ----------------
+// Common constants
+// ----------------
+
+const POSITION_CHANGE_THRESHOLD = 1e3;  // How much center position must change to trigger an update
+
+
 // ----------------
 // UseMapItems hook
 // ----------------
@@ -14,22 +22,38 @@ import { useEffect, useState } from "react";
 // A general hook for extracting all the pokemons pinned to the map
 // - Allows to filter items based on given center of the map and maximal proximity radius (in metres)
 export default function useMapItems({center, radius} : {center: Coords | undefined, radius: number | undefined}) {
-    // Hook state
+
+    // 1. Hook state
+    // -------------
+
+    // Pokemon lists
     const [allPokemons, setAllPokemons] = useState<Pokemon[]>([]);              // Full list of pokemons (replace with async storage?)
     const [visiblePokemons, setVisiblePokemons] = useState<Pokemon[]>([]);      // Pokemons to render
 
-    // 1. Loading visible pokemons
-    // ---------------------------
+    // Effective center
+    // - Updates effective center only if we travel far enough from the old one
+    // - This prevents reloading map item list too many times
+    const [effCenter, setEffCenter] = useState<Coords | undefined>(undefined);
 
-    // Refreshed each time either map state (position or scale) or all pokemons list changes
+    // 2. Hook state reload
+    // --------------------
+
+    // Updating effective center
     useEffect(() => {
-        const pokemonsInRange = center && radius ? allPokemons.filter((item: Pokemon): boolean => (distance(center, item.coords) < radius)) : 
-                                                   allPokemons.slice();
+        if (!effCenter || center && distance(effCenter!, center) >= POSITION_CHANGE_THRESHOLD)
+            setEffCenter(center);
+    }, [center]);
+
+    // Loading visible pokemons
+    // - Refreshed each time either map state (position or scale) or all pokemons list changes
+    useEffect(() => {
+        const pokemonsInRange = effCenter && radius ? allPokemons.filter((item: Pokemon): boolean => (distance(effCenter, item.coords) < radius)) : 
+                                                      allPokemons.slice();
 
         setVisiblePokemons(pokemonsInRange);
-    }, [allPokemons, center, radius]);
+    }, [allPokemons, effCenter, radius]);
 
-    // 2. Hook state handlers
+    // 3. Hook state handlers
     // ----------------------
 
     // State handler - adding new pokemon to the map
@@ -38,7 +62,7 @@ export default function useMapItems({center, radius} : {center: Coords | undefin
         setAllPokemons((prevList) => [...prevList, pokemon]);
     };
 
-    // 3. Hook return definition
+    // 4. Hook return definition
     // -------------------------
 
     return { visiblePokemons, addPokemon };

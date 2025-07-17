@@ -1,6 +1,6 @@
 import PokeMarker from "@/components/PokeMarker";
 import SelectionBottomTab from "@/components/SelectionBottomTab";
-import { Coords, distance, equals, Pokemon, State } from "@/constants/types/map";
+import { Coords, Pokemon, State } from "@/constants/types/map";
 import useMapItems from "@/hooks/useMapItems";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -11,59 +11,65 @@ import * as Location from 'expo-location';
 
 
 // ----------------
+// Common constants
+// ----------------
+
+const MAX_RENDER_RADIUS = 5e3;          // metres
+
+const INITIAL_CENTER = { latitude: 50.049683, longitude: 19.944544 };   // Cracov coordinates
+const INITIAL_SCALE = { latitudeDelta: 0.02, longitudeDelta: 0.01 };
+
+
+// ----------------
 // Pokemon map view
 // ----------------
 
 export default function PokeMap() {
-    // Constants
-    const MAX_RENDER_RADIUS = 5e3;          // metres
-    const POSITION_CHANGE_THRESHOLD = 1e3;  // How much center position must change to trigger an update
 
-    // Component state
-    // - effCenter is an effective center, which is used to obtain visible map markers and updated less frequently than real center
+    // 1. Component state
+    // ------------------
+
+    // Map activity
+    // - Used to prevent some bugs related to unmounting the map after any tab change
     const [isActive, setIsActive] = useState<boolean>(false);   // Necessary to stop unmounting the component
 
+    // Complete map state
     const [mapState, setMapState] = useState<State | undefined>(undefined);
-    // TODO: Move to useMapItems hook
-    const [effCenter, setEffCenter] = useState<Coords | undefined>(undefined);
-
-    const {visiblePokemons, addPokemon} = useMapItems({center: effCenter, radius: MAX_RENDER_RADIUS});
-    // TODO: Add ID to Pokemon structure
-    const [selectedMarker, setSelectedMarker] = useState<Coords | null>(null);
-
-    const [isBottomTabVisible, setIsBottomTabVisible] = useState<boolean>(false);
-
     const lastClickCoords = useRef<Coords | null>(null);      // Keep track of user's last click coordinates
 
-    // Step 1 - component state initialization
-    useEffect(() => {
-        // Cracov coordinates
-        let initialCenter = { latitude: 50.049683, longitude: 19.944544 };
-        let initialScale = { latitudeDelta: 0.02, longitudeDelta: 0.01 };
+    // Visible & selected items (pokemons)
+    const {visiblePokemons, addPokemon} = useMapItems({center: mapState?.center, radius: MAX_RENDER_RADIUS});
+    const [selectedMarker, setSelectedMarker] = useState<string | null>(null);  // By marker ID
 
+    // Bottom tab activity
+    const [isBottomTabVisible, setIsBottomTabVisible] = useState<boolean>(false);
+
+    // 2. Map state initialization
+    // ---------------------------
+
+    useEffect(() => {
         // Async wrapper for localization API
         // - Use expo-location to obtain current location coordinates
-        // - San Francisco by default (?)
-        // - TODO: Always return default location
-        const getLocation = async (): Promise<Coords | void> => {
+        // - San Francisco by default
+        const getLocation = async (): Promise<Coords> => {
             const { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                console.log("Error: permission to access location was denied");
-                return;
-            }
+            if (status !== 'granted') throw new Error("Permission to access location was denied");
 
             const location = await Location.getCurrentPositionAsync({});
+            if (!location) throw new Error("Unable to load current location");
             
             return {latitude: location.coords.latitude, longitude: location.coords.longitude};
         };
 
-        getLocation().then(location => {
-            if (location) initialCenter = location;
-            else console.log("Setting up Cracov instead...");
-
-            setMapState({center: initialCenter, scale: initialScale});
-            setEffCenter(initialCenter);
-        });
+        // Initialize map state
+        getLocation()
+            .then((pos: Coords) => {
+                setMapState({ center: pos, scale: INITIAL_SCALE });
+            })
+            .catch((err: Error) => {
+                console.log(err);
+                setMapState({ center: INITIAL_CENTER, scale: INITIAL_SCALE });
+            });
     }, []);
 
     // A side method to prevent unnecessary renders of the component and eliminate some bugs
@@ -76,23 +82,19 @@ export default function PokeMap() {
         }, [])
     );
 
-    // Step 2 - map state handlers
+    // 2. Map state handlers
+    // ---------------------
+
+    // Update map state after each position change
     const onRegionChange = (region: any) => {
-        const newCenter = {latitude: region.latitude, longitude: region.longitude};
-        const newScale = {latitudeDelta: region.latitudeDelta, longitudeDelta: region.longitudeDelta};
-
         setMapState({
-            center: newCenter,
-            scale: newScale
+            center: {latitude: region.latitude, longitude: region.longitude},
+            scale: {latitudeDelta: region.latitudeDelta, longitudeDelta: region.longitudeDelta}
         });
-
-        // Update effective center only if we travel far enough from the old one
-        // - This prevents reloading map items list too many times
-        if (distance(effCenter!, newCenter) >= POSITION_CHANGE_THRESHOLD)
-            setEffCenter(newCenter);
     };
 
-    // Step 3 - map click handlers
+    // 3. Map click handlers
+    // ---------------------
 
     // Main map click handler - short press
     // - Removes focus from any marker
@@ -114,11 +116,20 @@ export default function PokeMap() {
 
     // Handle adding new pokemon after selection stage
     const onSelectPokemon = (name: string): void => {
-        const pokemon = {name: name, coords: lastClickCoords.current!};
+        const pokemon = {
+            // Marker's coordinates should be unique, so we can use it as an ID
+            id: lastClickCoords.current!.latitude.toString() + lastClickCoords.current!.longitude.toString(),
+            name: name, 
+            coords: lastClickCoords.current!
+        };
+
         addPokemon(pokemon);
     };
 
-    // Step 4 - render map component
+    // 4. Component JSX structure
+    // --------------------------
+
+    // Loading view
     if (!mapState || !isActive) {
         return (
             <View style={styles.container}>
@@ -127,6 +138,7 @@ export default function PokeMap() {
         );
     }
 
+    // Main map view
     return (
         <>
             <MapView
@@ -142,12 +154,12 @@ export default function PokeMap() {
                 onLongPress={onMapLongClick}
                 style={styles.container}
             >
-                {visiblePokemons.map((pokemon: Pokemon, idx: number) => (
+                {visiblePokemons.map((pokemon: Pokemon) => (
                     <PokeMarker 
-                        key={idx}   // TODO: Do not use array index as a key
+                        key={pokemon.id}
                         item={pokemon} 
-                        isSelected={(selectedMarker && equals(selectedMarker!, pokemon.coords)) as boolean}
-                        select={(pos: Coords | null) => setSelectedMarker(pos)}
+                        isSelected={selectedMarker === pokemon.id}
+                        select={(id: string | null) => setSelectedMarker(id)}
                     />
                 ))}
             </MapView>

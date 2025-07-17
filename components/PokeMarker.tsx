@@ -1,4 +1,4 @@
-import { Coords, Pokemon } from "@/constants/types/map";
+import { Pokemon } from "@/constants/types/map";
 import usePokemon from "@/hooks/usePokemon";
 import { ImageBackground } from "expo-image";
 import { useRouter } from "expo-router";
@@ -11,31 +11,37 @@ import { Marker } from "react-native-maps";
 // ------------------------
 
 // A marker displayed on pokemon map inside the map tab
-export default function PokeMarker({item, isSelected, select}: {item: Pokemon, isSelected: boolean, select: (pos: Coords | null) => void}) {
-    // Component state
-    // - Passing item.name only after marker has been selected prevents unnecessary fetches inside usePokemon hook,
-    //   since we do not need to display pokemon's icon if the marker is not selected
+export default function PokeMarker({item, isSelected, select}: {item: Pokemon, isSelected: boolean, select: (id: string | null) => void}) {
+
+    // 1. Component state
+    // ------------------
+
+    // Passing item.name only after marker has been selected prevents unnecessary fetches inside usePokemon hook,
+    // since we do not need to display pokemon's icon if the marker is not selected
     const pokemon = usePokemon( isSelected ? item.name as string : null);
 
     // Navigation state
     const router = useRouter();
 
-    // Step 1 - render component
+    // 2. Component JSX structure
+    // --------------------------
+
+    // This is an uglier but preferable solution, since an alternative approach with conditionals inside 'source' prop leads to some weird behavior
+    const icon = isSelected && pokemon ? <ImageBackground source={{ uri: pokemon!.sprites.front_default }} style={styles.pokeImage} /> :
+                                         <ImageBackground source={require('@/assets/images/icons/poke-ball.png')} style={styles.pokeBall} />;
+
     return (
         <Marker
             coordinate={item.coords}
             title={item.name}
-            onSelect={() => select(item.coords)}
+            onSelect={() => select(item.id)}
             onDeselect={() => select(null)}
             onPress={() => {
                 if (isSelected) router.push({pathname: "/pokemon/[name]", params: {name: item.name}});
             }}
         >
             <View style={styles.iconContainer}>
-                {/* Weird stuff below, but at least it works... */}
-                {/* TODO: split logic to simpler parts */}
-                {isSelected && pokemon && (<ImageBackground source={{ uri: pokemon!.sprites.front_default }} style={styles.pokeImage} /> )}
-                {(!isSelected || !pokemon) && (<ImageBackground source={require('@/assets/images/icons/poke-ball.png')} style={styles.pokeBall} />)}
+                {icon}
             </View>
         </Marker>
     );
@@ -49,7 +55,7 @@ export default function PokeMarker({item, isSelected, select}: {item: Pokemon, i
 const styles = StyleSheet.create({
     iconContainer: {
         width: 30,
-        height: 30,
+        height: 30
     },
     pokeBall:{
         width: 30,
@@ -57,6 +63,6 @@ const styles = StyleSheet.create({
     },
     pokeImage: {
         width: 50,
-        height: 50,
+        height: 50
     }
 });

@@ -27,7 +27,7 @@ export interface FavoritePokemonContext {
 export const AppContext = createContext<AppContextType | null>(null);
 
 // Context provider
-export const AppProvider = ({children} : {children: JSX.Element}): JSX.Element => {
+export const AppProvider = ({children} : {children: JSX.Element[]}): JSX.Element => {
 
     // 1. Context provider state
     // -------------------------

@@ -58,6 +58,7 @@ export default function PokeCam() {
     // ----------------------------------------
 
     // Face detection handler
+    // TODO: try useCallback
     const handleFaceDetection = (faces: Face[], frame: Frame): void => {
         // No faces detected
         if (faces.length == 0) {

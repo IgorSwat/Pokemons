@@ -35,7 +35,7 @@ export function latToMetres(latDelta: number) : number {
 
 // Converts longtitude difference to meters
 // - Requires additional information about latitude absolute position
-export function longToMeters(longDelta: number, lat: number) : number {
+export function lngToMetres(longDelta: number, lat: number) : number {
     return longDelta * (Math.PI / 180) * R * Math.cos(lat * Math.PI / 180);
 }
 
@@ -73,7 +73,8 @@ export interface Scale {
 
 // Represents a (named) marker on the map
 export interface Item {
-    name: string;       // Any valid identifier
+    id: string;          // Could be any valid identifier, usualy serialized coords in typical cases   
+    name: string;
     coords: Coords;
 };
 
