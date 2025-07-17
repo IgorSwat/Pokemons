@@ -67,6 +67,9 @@ export const AppProvider = ({children} : {children: JSX.Element}): JSX.Element =
         }
     };
 
+    // 4. Component JSX structure
+    // --------------------------
+
     return (
         <AppContext.Provider 
             value={{ 
