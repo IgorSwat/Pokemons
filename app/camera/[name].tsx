@@ -110,7 +110,6 @@ export default function PokeCam() {
                 style={StyleSheet.absoluteFill}
                 device={device}
                 isActive={isFocused}
-                onUIRotationChanged={() => {}}
                 faceDetectionCallback={handleFaceDetection}
                 faceDetectionOptions={{
                     ...faceDetectionOptions,

@@ -21,7 +21,7 @@ export default function Pokemons() {
 
     // Component state
     const {pokemons, loading, loadMorePokemons} = usePokemonList(POKEMON_BATCH_SIZE);
-    const {favorite, } = useFavorite();
+    const {favoritePokemon, } = useFavorite();
 
     // Step 2 - navigation between views
     // - We want to navigate to the pokemon view after clicking one of the list entries
@@ -36,7 +36,7 @@ export default function Pokemons() {
         <SafeAreaView style={styles.container}>
             <FlatList
                 data={pokemons}
-                renderItem={({item}) => <PokeEntry pokemon={item} favorite={item.name === favorite?.name} handleClick={() => handleItemClick(item)} />}
+                renderItem={({item}) => <PokeEntry pokemon={item} favorite={item.name === favoritePokemon?.name} handleClick={() => handleItemClick(item)} />}
                 keyExtractor={(item) => item.id.toString()}
                 onEndReached={() => loadMorePokemons(POKEMON_BATCH_SIZE)}
                 onEndReachedThreshold={0.5}

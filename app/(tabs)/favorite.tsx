@@ -10,15 +10,15 @@ import { StyleSheet, Text, View } from "react-native";
 // TODO: Can details view be reused to replace this one?
 export default function Favorite() {
     // Component state
-    const {favorite, } = useFavorite();
+    const {favoritePokemon, } = useFavorite();
 
     // Step 2 - render poke card
     // - If an error occured during fetching the data, display some dumb error text instead
     // - TODO: remove this test version
     return (
         <View style={styles.mainView}>
-            {favorite ? <PokeCard pokemon={favorite as Pokemon} favorite={true}/> :
-                       <Text style={{fontSize: 18}}>No favorite pokemon selected</Text>}
+            {favoritePokemon ? <PokeCard pokemon={favoritePokemon as Pokemon} favorite={true}/> :
+                               <Text style={{fontSize: 18}}>No favorite pokemon selected</Text>}
         </View>
     );
 }

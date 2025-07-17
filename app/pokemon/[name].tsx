@@ -18,7 +18,7 @@ export default function Details() {
 
     // Component state
     const pokemon = usePokemon(name as string);
-    const {favorite, changeFavorite} = useFavorite();
+    const {favoritePokemon, changeFavorite} = useFavorite();
     const [isFavorite, setIsFavorite] = useState<boolean>(false);
 
     // Navigation state
@@ -27,9 +27,9 @@ export default function Details() {
 
     // Step 1 - load and compare selected pokemon and favorite pokemon data
     useEffect(() => {
-        if (pokemon && favorite)
-            setIsFavorite(pokemon!.name === favorite!.name);
-    }, [pokemon, favorite]);
+        if (pokemon && favoritePokemon)
+            setIsFavorite(pokemon!.name === favoritePokemon!.name);
+    }, [pokemon, favoritePokemon]);
 
     // Step 2 - render additional layout elements
     // - We use header button to allow user to choose pokemon as favorite
