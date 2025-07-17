@@ -1,7 +1,7 @@
 import PokeMarker from "@/components/PokeMarker";
 import SelectionBottomTab from "@/components/SelectionBottomTab";
-import { Coords, Pokemon, State } from "@/constants/types/map";
 import useMapItems from "@/hooks/useMapItems";
+import { Coords, Pokemon, State } from "@/types/map";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
@@ -67,7 +67,7 @@ export default function PokeMap() {
                 setMapState({ center: pos, scale: INITIAL_SCALE });
             })
             .catch((err: Error) => {
-                console.log(err);
+                console.log(`ERROR: ${err}`);
                 setMapState({ center: INITIAL_CENTER, scale: INITIAL_SCALE });
             });
     }, []);

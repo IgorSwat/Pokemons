@@ -3,7 +3,7 @@
 // -------------------
 
 import { fetchPokemonNames, fetchPokemons } from "@/api/requests";
-import { Pokemon } from "@/constants/types/pokemon";
+import { Pokemon } from "@/types/pokemon";
 import { useEffect, useState } from "react";
 
 // Provides given amount of pokemons (in the same order as in Poke API)

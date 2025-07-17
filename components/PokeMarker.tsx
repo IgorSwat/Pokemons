@@ -1,5 +1,5 @@
-import { Pokemon } from "@/constants/types/map";
 import usePokemon from "@/hooks/usePokemon";
+import { Pokemon } from "@/types/map";
 import { ImageBackground } from "expo-image";
 import { useRouter } from "expo-router";
 import { StyleSheet, View } from "react-native";

@@ -1,6 +1,6 @@
 import PokeCard from "@/components/PokeCard";
-import { Pokemon } from "@/constants/types/pokemon";
 import useFavorite from "@/hooks/useFavorite";
+import { Pokemon } from "@/types/pokemon";
 import { StyleSheet, Text, View } from "react-native";
 
 // ---------------------

@@ -1,4 +1,4 @@
-import { Pokemon } from "@/constants/types/pokemon";
+import { Pokemon } from "@/types/pokemon";
 import PokeEntry from "../../components/PokeEntry";
 
 import useFavorite from "@/hooks/useFavorite";

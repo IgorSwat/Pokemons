@@ -1,4 +1,4 @@
-import { Coords, distance, Pokemon } from "@/constants/types/map";
+import { Coords, distance, Pokemon } from "@/types/map";
 import { useEffect, useState } from "react";
 
 

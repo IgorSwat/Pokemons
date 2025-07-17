@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Animated, Image, StyleSheet, Text, View } from "react-native";
-import { Pokemon } from "../constants/types/pokemon";
+import { Pokemon } from "../types/pokemon";
 
 // ----------------------
 // Pokemon card component

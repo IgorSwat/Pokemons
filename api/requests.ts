@@ -1,5 +1,5 @@
-import { Resource } from "@/constants/types/common";
-import { Pokemon } from "@/constants/types/pokemon";
+import { Resource } from "@/types/common";
+import { Pokemon } from "@/types/pokemon";
 
 
 // --------------------------------
